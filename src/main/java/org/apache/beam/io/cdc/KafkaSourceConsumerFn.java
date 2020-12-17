@@ -1,24 +1,11 @@
 package org.apache.beam.io.cdc;
 
-import static org.apache.beam.vendor.guava.v26_0_jre.com.google.common.base.Preconditions.checkState;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import javax.annotation.Nullable;
 import org.apache.beam.sdk.coders.Coder;
 import org.apache.beam.sdk.coders.SerializableCoder;
 import org.apache.beam.sdk.transforms.DoFn;
-import org.apache.beam.sdk.transforms.SerializableFunction;
 import org.apache.beam.sdk.transforms.splittabledofn.RestrictionTracker;
 import org.apache.beam.sdk.transforms.splittabledofn.SplitResult;
+import org.apache.beam.sdk.values.PCollection;
 import org.apache.beam.vendor.guava.v26_0_jre.com.google.common.collect.ImmutableMap;
 import org.apache.kafka.connect.source.SourceConnector;
 import org.apache.kafka.connect.source.SourceRecord;
@@ -27,9 +14,15 @@ import org.apache.kafka.connect.source.SourceTaskContext;
 import org.apache.kafka.connect.storage.OffsetStorageReader;
 import org.joda.time.Duration;
 
+import javax.annotation.Nullable;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class KafkaSourceConsumerFn<T> extends DoFn<Map<String, String>, T> {
 
-  public static class OffsetHolder implements Serializable {
+  static class OffsetHolder implements Serializable {
     @Nullable
     public final Map<String, ? extends Object> offset;
     public final List<? extends Object> history;
@@ -71,12 +64,17 @@ public class KafkaSourceConsumerFn<T> extends DoFn<Map<String, String>, T> {
     public void checkDone() throws IllegalStateException {
       return;
     }
+
+    @Override
+    public IsBounded isBounded() {
+      return IsBounded.BOUNDED;
+    }
   }
 
   public static final String BEAM_INSTANCE_PROPERTY = "beam.parent.instance";
   private final Class<? extends SourceConnector> connectorClass;
   private final SourceRecordMapper<T> fn;
-  public static final Map<String, RestrictionTracker<OffsetHolder,  Map<String, Object>>>
+  protected static final Map<String, RestrictionTracker<OffsetHolder,  Map<String, Object>>>
       restrictionTrackers = new ConcurrentHashMap<>();
 
   KafkaSourceConsumerFn(Class<?> connectorClass,

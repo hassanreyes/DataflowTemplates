@@ -103,6 +103,15 @@
     <cassandra.driver.version>3.6.0</cassandra.driver.version>
     <kms.version>1.40.0</kms.version>
     <proto-kms.version>0.87.0</proto-kms.version>
+    <kafka.connect-api.version>2.5.0</kafka.connect-api.version>
+    <kafka.connect-json.version>2.5.0</kafka.connect-json.version>
+    <debezium-core.version>1.3.1.Final</debezium-core.version>
+    <debezium-connector-mysql.version>1.3.1.Final</debezium-connector-mysql.version>
+    <debezium-connector-sqlserver.version>1.3.0.Final</debezium-connector-sqlserver.version>
+    <debezium-connector-postgres.version>1.3.0.Final</debezium-connector-postgres.version>
+    <runner.suffix>gcp-poc</runner.suffix>
+    <runner.class>com.google.cloud.teleport.templates.CdcToText</runner.class>
+    <antlr.version>4.9</antlr.version>
   </properties>
 
   <dependencies>
@@ -331,6 +340,39 @@
       <version>${scassandra.version}</version>
       <scope>test</scope>
     </dependency>
+
+    <!-- DebeziumIO -->
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>connect-api</artifactId>
+      <version>${kafka.connect-api.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>connect-json</artifactId>
+      <version>${kafka.connect-json.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.debezium</groupId>
+      <artifactId>debezium-core</artifactId>
+      <version>${debezium-core.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.debezium</groupId>
+      <artifactId>debezium-connector-mysql</artifactId>
+      <version>${debezium-connector-mysql.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.debezium</groupId>
+      <artifactId>debezium-connector-sqlserver</artifactId>
+      <version>${debezium-connector-sqlserver.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.debezium</groupId>
+      <artifactId>debezium-connector-postgres</artifactId>
+      <version>${debezium-connector-postgres.version}</version>
+    </dependency>
+
 
     <!-- Misc -->
     <dependency>
@@ -587,6 +629,13 @@
       <artifactId>proto</artifactId>
       <version>${tensorflow.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.antlr</groupId>
+      <artifactId>antlr4-runtime</artifactId>
+      <version>${antlr.version}</version>
+      <scope>compile</scope>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -635,6 +684,34 @@
                 <transformers>
                   <transformer
                       implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                </transformers>
+              </configuration>
+            </execution>
+            <execution>
+              <id>generate-runner</id>
+              <goals>
+                <goal>shade</goal>
+              </goals>
+              <configuration>
+                <finalName>${project.artifactId}${runner.suffix}</finalName>
+                <filters>
+                  <filter>
+                    <artifact>*:*</artifact>
+                    <excludes>
+                      <exclude>META-INF/LICENSE</exclude>
+                      <exclude>META-INF/*.SF</exclude>
+                      <exclude>META-INF/*.DSA</exclude>
+                      <exclude>META-INF/*.RSA</exclude>
+                    </excludes>
+                  </filter>
+                </filters>
+                <transformers>
+                  <transformer
+                          implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                  <transformer
+                          implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                    <mainClass>${runner.class}</mainClass>
+                  </transformer>
                 </transformers>
               </configuration>
             </execution>
@@ -765,6 +842,15 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <version>${maven-jar-plugin.version}</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <classpathPrefix>lib/</classpathPrefix>
+              <mainClass>com.google.cloud.teleport.templates.CdcToText</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
       </plugin>
 
       <plugin>
@@ -773,41 +859,41 @@
         <version>${maven-shade-plugin.version}</version>
       </plugin>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>${maven-checkstyle-plugin.version}</version>
-        <dependencies>
-          <dependency>
-            <groupId>com.puppycrawl.tools</groupId>
-            <artifactId>checkstyle</artifactId>
-            <version>${checkstyle.version}</version>
-          </dependency>
-        </dependencies>
-        <configuration>
-          <configLocation>${project.basedir}/src/main/resources/checkstyle/checkstyle.xml</configLocation>
-          <suppressionsLocation>${project.basedir}/src/main/resources/checkstyle/suppressions.xml</suppressionsLocation>
-          <consoleOutput>true</consoleOutput>
-          <failOnViolation>true</failOnViolation>
-          <includeResources>false</includeResources>
-          <includeTestSourceDirectory>true</includeTestSourceDirectory>
-        </configuration>
-        <executions>
-          <!--
-            Execute checkstyle after compilation but before tests.
+<!--      <plugin>-->
+<!--        <groupId>org.apache.maven.plugins</groupId>-->
+<!--        <artifactId>maven-checkstyle-plugin</artifactId>-->
+<!--        <version>${maven-checkstyle-plugin.version}</version>-->
+<!--        <dependencies>-->
+<!--          <dependency>-->
+<!--            <groupId>com.puppycrawl.tools</groupId>-->
+<!--            <artifactId>checkstyle</artifactId>-->
+<!--            <version>${checkstyle.version}</version>-->
+<!--          </dependency>-->
+<!--        </dependencies>-->
+<!--        <configuration>-->
+<!--          <configLocation>${project.basedir}/src/main/resources/checkstyle/checkstyle.xml</configLocation>-->
+<!--          <suppressionsLocation>${project.basedir}/src/main/resources/checkstyle/suppressions.xml</suppressionsLocation>-->
+<!--          <consoleOutput>true</consoleOutput>-->
+<!--          <failOnViolation>true</failOnViolation>-->
+<!--          <includeResources>false</includeResources>-->
+<!--          <includeTestSourceDirectory>true</includeTestSourceDirectory>-->
+<!--        </configuration>-->
+<!--        <executions>-->
+<!--          &lt;!&ndash;-->
+<!--            Execute checkstyle after compilation but before tests.-->
 
-            This ensures that any parsing or type checking errors are from
-            javac, so they look as expected. Beyond that, we want to
-            fail as early as possible.
-          -->
-          <execution>
-            <phase>test-compile</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+<!--            This ensures that any parsing or type checking errors are from-->
+<!--            javac, so they look as expected. Beyond that, we want to-->
+<!--            fail as early as possible.-->
+<!--          &ndash;&gt;-->
+<!--          <execution>-->
+<!--            <phase>test-compile</phase>-->
+<!--            <goals>-->
+<!--              <goal>check</goal>-->
+<!--            </goals>-->
+<!--          </execution>-->
+<!--        </executions>-->
+<!--      </plugin>-->
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

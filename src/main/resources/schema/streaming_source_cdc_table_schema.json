@@ -1,0 +1,9 @@
+{
+  "fields": [
+    {
+      "name": "json",
+      "type": "STRING",
+      "mode": "REQUIRED"
+    }
+  ]
+}

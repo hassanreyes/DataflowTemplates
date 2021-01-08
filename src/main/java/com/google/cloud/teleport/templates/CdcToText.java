@@ -19,9 +19,11 @@ package com.google.cloud.teleport.templates;
 import com.google.api.services.bigquery.model.TableRow;
 import com.google.cloud.teleport.templates.common.CdcConverters;
 import com.google.cloud.teleport.util.KMSEncryptedNestedValueProvider;
+import com.google.cloud.teleport.util.ResourceUtils;
 import io.debezium.connector.mysql.MySqlConnector;
 import io.debezium.relational.history.MemoryDatabaseHistory;
 import org.apache.beam.io.cdc.DebeziumIO;
+import org.apache.beam.io.cdc.DebeziumSDFDatabaseHistory;
 import org.apache.beam.io.cdc.SourceRecordJson;
 import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.PipelineResult;
@@ -76,12 +78,13 @@ public class CdcToText {
                                 .withHostName(options.getHostname())
                                 .withPort(options.getPort())
                                 //.withConnectionProperty("database.server.id", "184054")
-                                //.withConnectionProperty("database.server.name", "dbserver1")
+                                //.withConnectionProperty("snapshot.new.tables", "parallel")
+                                .withConnectionProperty("database.server.name", "dbserver1")
                                 .withConnectionProperty("database.include.list", "inventory")
-                                .withConnectionProperty("database.history", MemoryDatabaseHistory.class.getName())
+                                //.withConnectionProperty("database.history", DebeziumSDFDatabaseHistory.class.getName())
                                 .withConnectionProperty("include.schema.changes", "false")
                                 .withConnectionProperty("database.allowPublicKeyRetrieval", "true")
-                ).withFormatFunction(new SourceRecordJson.SourceRecordJsonMapper())
+                ).withFormatFunction(new SourceRecordJson.SourceRecordJsonMapper()).withCoder(StringUtf8Coder.of())
         ).setCoder(StringUtf8Coder.of())
         .apply("Json to TableRow", ParDo.of(new DoFn<String, TableRow>() {
           @ProcessElement
@@ -99,6 +102,7 @@ public class CdcToText {
                         .withWriteDisposition(BigQueryIO.Write.WriteDisposition.WRITE_APPEND)
                         .withCustomGcsTempLocation(options.getBigQueryLoadingTemporaryDirectory())
                         .withMethod(BigQueryIO.Write.Method.STREAMING_INSERTS)
+                        .withJsonSchema(ResourceUtils.getCdcTableSchemaJson())
 //                        .withSchema(getTableSchema())
                         .to(options.getOutputTable()));
 //          .apply("Write to file",

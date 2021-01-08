@@ -30,6 +30,10 @@ public class ResourceUtils {
   private static final String DEADLETTER_SCHEMA_FILE_PATH =
       "schema/streaming_source_deadletter_table_schema.json";
 
+  /** The path within resources to the cdc BigQuery schema. */
+  private static final String CDC_SCHEMA_FILE_PATH =
+      "schema/streaming_source_cdc_table_schema.json";
+
   /**
    * Retrieves the file contents of the dead-letter schema file within the project's resources into
    * a {@link String} object.
@@ -45,6 +49,26 @@ public class ResourceUtils {
     } catch (Exception e) {
       LOG.error(
           "Unable to read {} file from the resources folder!", DEADLETTER_SCHEMA_FILE_PATH, e);
+    }
+
+    return schemaJson;
+  }
+
+  /**
+   * Retrieves the file contents of the cdc schema file within the project's resources into
+   * a {@link String} object.
+   *
+   * @return The schema JSON string.
+   */
+  public static String getCdcTableSchemaJson() {
+    String schemaJson = null;
+    try {
+      schemaJson =
+              Resources.toString(
+                      Resources.getResource(CDC_SCHEMA_FILE_PATH), StandardCharsets.UTF_8);
+    } catch (Exception e) {
+      LOG.error(
+              "Unable to read {} file from the resources folder!", CDC_SCHEMA_FILE_PATH, e);
     }
 
     return schemaJson;

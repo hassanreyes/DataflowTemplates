@@ -101,6 +101,8 @@ public class CdcToBigQuery {
   }
 }
 
+/************* Comentario para Chaparro ********************/
+
 /** Interface used by the CdcToBigQuery pipeline to accept user input. */
 interface CdcToBigQueryOptions extends PipelineOptions {
   @Description(

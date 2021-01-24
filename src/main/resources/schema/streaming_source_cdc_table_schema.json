@@ -1,9 +1,34 @@
 {
   "fields": [
     {
-      "name": "json",
-      "type": "STRING",
+      "name": "order_number",
+      "type": "INTEGER",
       "mode": "REQUIRED"
+    },
+    {
+      "name": "order_datetime_utc",
+      "type": "DATETIME",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "purchaser",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "quantity",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "product_id",
+      "type": "INTEGER",
+      "mode": "NULLABLE"
+    },
+    {
+      "name": "source",
+      "type": "STRING",
+      "mode": "NULLABLE"
     }
   ]
 }

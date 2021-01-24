@@ -59,15 +59,17 @@ public class DebeziumOffsetTracker extends RestrictionTracker<DebeziumOffsetHold
     @Override
     public boolean tryClaim(Map<String, Object> position) {
         LOG.debug("-------------- Claiming {} used to have: {}", position, restriction.offset);
-        long elapsedTime = System.currentTimeMillis() - KafkaSourceConsumerFn.startTime.getMillis();
+//        long elapsedTime = System.currentTimeMillis() - KafkaSourceConsumerFn.startTime.getMillis();
         int fetchedRecords = this.restriction.fetchedRecords == null ? 0 : this.restriction.fetchedRecords + 1;
-        LOG.debug("-------------- Time running: {} / {}", elapsedTime, (KafkaSourceConsumerFn.minutesToRun * MILLIS));
+//        LOG.debug("-------------- Time running: {} / {}", elapsedTime, (KafkaSourceConsumerFn.minutesToRun * MILLIS));
         this.restriction = new DebeziumOffsetHolder(position, this.restriction.history, fetchedRecords);
         LOG.debug("-------------- History: {}", this.restriction.history);
-        if (KafkaSourceConsumerFn.minutesToRun < 0) {
-            return fetchedRecords < KafkaSourceConsumerFn.maxRecords;
-        }
-        return elapsedTime < (KafkaSourceConsumerFn.minutesToRun * MILLIS);
+//        if (KafkaSourceConsumerFn.minutesToRun < 0) {
+//            return fetchedRecords < KafkaSourceConsumerFn.maxRecords;
+//        }
+//        return elapsedTime < (KafkaSourceConsumerFn.minutesToRun * MILLIS);
+
+        return  true;
     }
     
     @Override

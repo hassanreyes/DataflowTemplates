@@ -149,8 +149,6 @@
     <orderEntry type="library" name="Maven: org.apache.hadoop:hadoop-auth:2.8.5" level="project" />
     <orderEntry type="library" name="Maven: com.nimbusds:nimbus-jose-jwt:4.41.1" level="project" />
     <orderEntry type="library" name="Maven: com.github.stephenc.jcip:jcip-annotations:1.0-1" level="project" />
-    <orderEntry type="library" name="Maven: net.minidev:json-smart:2.3" level="project" />
-    <orderEntry type="library" name="Maven: net.minidev:accessors-smart:1.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.directory.server:apacheds-kerberos-codec:2.0.0-M15" level="project" />
     <orderEntry type="library" name="Maven: org.apache.directory.server:apacheds-i18n:2.0.0-M15" level="project" />
     <orderEntry type="library" name="Maven: org.apache.directory.api:api-asn1-api:1.0.0-M20" level="project" />
@@ -212,7 +210,6 @@
     <orderEntry type="library" scope="TEST" name="Maven: com.sun.mail:mailapi:1.6.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.googlecode.libphonenumber:libphonenumber:8.11.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: net.sf.jopt-simple:jopt-simple:5.0.4" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: com.jayway.jsonpath:json-path:2.4.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: io.swagger.parser.v3:swagger-parser:2.0.20" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: io.swagger.parser.v3:swagger-parser-v2-converter:2.0.20" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: io.swagger:swagger-core:1.6.1" level="project" />
@@ -375,5 +372,8 @@
     <orderEntry type="library" name="Maven: com.google.api.grpc:proto-google-cloud-kms-v1:0.87.0" level="project" />
     <orderEntry type="library" name="Maven: org.tensorflow:proto:1.15.0" level="project" />
     <orderEntry type="library" name="Maven: org.antlr:antlr4-runtime:4.9" level="project" />
+    <orderEntry type="library" name="Maven: com.jayway.jsonpath:json-path:2.5.0" level="project" />
+    <orderEntry type="library" name="Maven: net.minidev:json-smart:2.3" level="project" />
+    <orderEntry type="library" name="Maven: net.minidev:accessors-smart:1.2" level="project" />
   </component>
 </module>

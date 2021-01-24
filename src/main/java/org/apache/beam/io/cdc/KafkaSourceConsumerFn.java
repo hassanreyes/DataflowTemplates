@@ -52,10 +52,6 @@ public class KafkaSourceConsumerFn<T> extends DoFn<Map<String, String>, T> {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaSourceConsumerFn.class);
     public static final String BEAM_INSTANCE_PROPERTY = "beam.parent.instance";
 
-    public static long minutesToRun = -1;
-    public static int maxRecords;
-    public static DateTime startTime;
-
     private final Class<? extends SourceConnector> connectorClass;
     private final SourceRecordMapper<T> fn;
     protected static final Map<String, RestrictionTracker<DebeziumOffsetHolder,  Map<String, Object>>>
@@ -65,28 +61,14 @@ public class KafkaSourceConsumerFn<T> extends DoFn<Map<String, String>, T> {
      * Initializes the SDF with a time limit.
      * @param connectorClass Supported Debezium connector class
      * @param fn a SourceRecordMapper
-     * @param minutesToRun Maximum time to run (in minutes)
      */
-    public KafkaSourceConsumerFn(Class<?> connectorClass, SourceRecordMapper<T> fn, long minutesToRun) {
+    public KafkaSourceConsumerFn(Class<?> connectorClass, SourceRecordMapper<T> fn) {
         this.connectorClass = (Class<? extends SourceConnector>) connectorClass;
         this.fn = fn;
-        KafkaSourceConsumerFn.minutesToRun = minutesToRun;
-    }
-
-    /**
-     * Initializes the SDF to be run indefinitely.
-     * @param connectorClass Supported Debezium connector class
-     * @param fn a SourceRecordMapper
-     */
-    public KafkaSourceConsumerFn(Class<?> connectorClass, SourceRecordMapper<T> fn, int maxRecords) {
-        this.connectorClass = (Class<? extends SourceConnector>) connectorClass;
-        this.fn = fn;
-        KafkaSourceConsumerFn.maxRecords = maxRecords;
     }
 
     @GetInitialRestriction
     public DebeziumOffsetHolder getInitialRestriction(@Element Map<String, String> unused) throws IOException {
-        KafkaSourceConsumerFn.startTime = new DateTime();
         return new DebeziumOffsetHolder(null, null, null);
     }
 
@@ -120,40 +102,47 @@ public class KafkaSourceConsumerFn<T> extends DoFn<Map<String, String>, T> {
         configuration.put(BEAM_INSTANCE_PROPERTY, this.getHashCode());
 
         SourceConnector connector = connectorClass.getDeclaredConstructor().newInstance();
-        connector.start(configuration);
 
-        SourceTask task = (SourceTask) connector.taskClass().getDeclaredConstructor().newInstance();
+        try {
+            connector.start(configuration);
 
-        task.initialize(new DebeziumBeamSourceTaskContext(tracker.currentRestriction().offset));
-        task.start(connector.taskConfigs(1).get(0));
+            SourceTask task = (SourceTask) connector.taskClass().getDeclaredConstructor().newInstance();
 
-        List<SourceRecord> records = task.poll();
-        if (records == null) {
-            LOG.debug("----------- No records found");
+            task.initialize(new DebeziumBeamSourceTaskContext(tracker.currentRestriction().offset));
+            task.start(connector.taskConfigs(1).get(0));
 
-            restrictionTrackers.remove(this.getHashCode());
-            return ProcessContinuation.stop();
-        }
+            List<SourceRecord> records = task.poll();
+            if (records == null) {
+                LOG.debug("----------- No records found");
 
-        if (records.size() == 0) {
-            restrictionTrackers.remove(this.getHashCode());
-            return ProcessContinuation.resume().withResumeDelay(Duration.standardSeconds(1));
-        }
-
-        for (SourceRecord record : records) {
-            LOG.debug("------------ Record found: {}", record);
-
-            Map<String, Object> offset = (Map<String, Object>) record.sourceOffset();
-
-            if (offset == null || !tracker.tryClaim(offset)) {
                 restrictionTrackers.remove(this.getHashCode());
                 return ProcessContinuation.stop();
             }
 
-            T json = this.fn.mapSourceRecord(record);
-            LOG.debug("****************** RECEIVED SOURCE AS JSON: {}", json);
+            if (records.size() == 0) {
+                restrictionTrackers.remove(this.getHashCode());
+                return ProcessContinuation.resume().withResumeDelay(Duration.standardSeconds(1));
+            }
 
-            receiver.output(json);
+            for (SourceRecord record : records) {
+                LOG.debug("------------ Record found: {}", record);
+
+                Map<String, Object> offset = (Map<String, Object>) record.sourceOffset();
+
+                if (offset == null || !tracker.tryClaim(offset)) {
+                    restrictionTrackers.remove(this.getHashCode());
+                    return ProcessContinuation.stop();
+                }
+
+                T json = this.fn.mapSourceRecord(record);
+                LOG.debug("****************** RECEIVED SOURCE AS JSON: {}", json);
+
+                receiver.output(json);
+            }
+        }catch (Exception e) {
+            LOG.error("Error: {} with Stacktrace: {}",e.getMessage(), e.getStackTrace());
+        }finally {
+            //connector.stop();
         }
 
         LOG.debug("WE SHOULD RESUME IN A BIT!");

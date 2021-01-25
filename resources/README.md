@@ -1,4 +1,13 @@
-### Complie & Deploy Chicago
+### Feed source databases
+
+For example:
+
+``python insert_orders_chicago.py --host 34.66.161.43 -y 2020``
+
+``insert_orders_la.py --host 34.66.161.43 --port 3307 -y 2020 -n 1000``
+
+
+###Complie & Deploy Chicago
 
 ``mvn compile -X exec:java \
 -Dexec.mainClass=com.google.cloud.teleport.templates.ChicagoToBigQuery \

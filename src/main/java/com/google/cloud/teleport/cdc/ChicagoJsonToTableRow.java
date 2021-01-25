@@ -43,7 +43,7 @@ public class ChicagoJsonToTableRow extends DoFn<String, TableRow> {
         calendar_date.add(Calendar.HOUR, calendar_time.get(Calendar.HOUR));
         calendar_date.add(Calendar.MINUTE, calendar_time.get(Calendar.MINUTE));
         calendar_date.add(Calendar.SECOND, calendar_time.get(Calendar.SECOND));
-        calendar_date.add(Calendar.HOUR, -8); // GMT-8
+        calendar_date.add(Calendar.HOUR, 6); // GMT-6
         calendar_date.setTimeZone(timeZone);
         SimpleDateFormat formatterWithTimeZone = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         formatterWithTimeZone.setTimeZone(TimeZone.getTimeZone("UTC"));

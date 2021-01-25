@@ -32,7 +32,7 @@ public class LAJsonToTableRow extends DoFn<String, TableRow> {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(order_date);
         calendar.setTimeZone(timeZone);
-        calendar.add(Calendar.HOUR, -8); // GMT-8
+        calendar.add(Calendar.HOUR, 8); // GMT-8
         SimpleDateFormat formatterWithTimeZone = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         formatterWithTimeZone.setTimeZone(TimeZone.getTimeZone("UTC"));
 

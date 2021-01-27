@@ -51,7 +51,7 @@ mvn compile -X exec:java \
     --gcpTempLocation=gs://gcp-beam-hassan-test/temp/ \
     --username=debezium \
     --password=dbz \
-    --hostname=34.66.161.43 \
+    --hostname=xxxx.xxxx.xxxx.xxxx \
     --port=3306 \
     --serviceAccount=gcp-beam-poc-hassan@apache-beam-poc-4a7e4215.iam.gserviceaccount.com \
     --outputTable=apache-beam-poc-4a7e4215:google_beam_poc.merged_orders \
@@ -70,7 +70,7 @@ mvn compile -X exec:java \
     --gcpTempLocation=gs://gcp-beam-hassan-test/temp/ \
     --username=debezium \
     --password=dbz \
-    --hostname=34.66.161.43 \
+    --hostname=xxxx.xxxx.xxxx.xxxx \
     --port=3307 \
     --serviceAccount=gcp-beam-poc-hassan@apache-beam-poc-4a7e4215.iam.gserviceaccount.com \
     --outputTable=apache-beam-poc-4a7e4215:google_beam_poc.merged_orders \

@@ -4,19 +4,19 @@ For example:
 
 Insert records for chicago source database.
 
-``python insert_orders_chicago.py --host 34.66.161.43 -y 2020``
+``python insert_orders_chicago.py --host xxxx.xxxx.xxxx.xxxx -y 2020``
 
 or 
 
-``Python3 insert_orders_chicago.py --host 34.66.161.43 -y 2020``
+``Python3 insert_orders_chicago.py --host xxxx.xxxx.xxxx.xxxx -y 2020``
 
 Insert records for LA source database.
 
-``python insert_orders_la.py --host 34.66.161.43 --port 3307 -y 2020 -n 1000``
+``python insert_orders_la.py --host xxxx.xxxx.xxxx.xxxx --port 3307 -y 2020 -n 1000``
 
 of 
 
-``Python3 insert_orders_chicago.py --host 34.66.161.43 -y 2020``
+``Python3 insert_orders_chicago.py --host xxxx.xxxx.xxxx.xxxx -y 2020``
 
 ## Compiling and Deploying your pipeline
 

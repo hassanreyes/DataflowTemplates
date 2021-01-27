@@ -40,7 +40,7 @@ The arguments are:
 * *defaultWorkerLogLevel*: Use this option to set all loggers at the specified default level.
 
 
-###Chicago example
+**Chicago example**
 
 ``mvn compile -X exec:java \
 -Dexec.mainClass=com.google.cloud.teleport.templates.ChicagoToBigQuery \
@@ -57,7 +57,7 @@ The arguments are:
 --bigQueryLoadingTemporaryDirectory=gs://gcp-beam-hassan-test/temp/ \
 --defaultWorkerLogLevel=DEBUG"``
 
-###LA example
+**LA example**
 
 ``mvn compile -X exec:java \
 -Dexec.mainClass=com.google.cloud.teleport.templates.LosAngelesToBigQuery \
